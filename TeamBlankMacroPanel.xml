@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<Command>
+      <UserInterface>
+
+        <Extensions>
+          <Version>1.7</Version>
+
+          <Panel>
+            <Order>2</Order>
+            <PanelId>panel_join_meeting</PanelId>
+            <Origin>local</Origin>
+            <Type>Home</Type>
+            <Icon>Webex</Icon>
+            <Color>#30D557</Color>
+            <Name>Join Meeting</Name>
+            <ActivityType>Custom</ActivityType>
+          </Panel>
+        </Extensions>
+
+      </UserInterface>
+
+      <Macros>
+         <Macro>
+            <Save>
+               <Name>TeamPart</Name>
+               <Overwrite>False</Overwrite>
+                  <body>
+const xapi = require('xapi');
+
+
+xapi.config.set('UserInterface Features Call Start','Hidden');
+xapi.config.set('UserInterface Features Call JoinWebex','Hidden');
+
+
+function alertInactive() {
+    xapi.Command.UserInterface.Message.Alert.Display({
+                    Title: 'Inactive Deposition',
+                    Text: 'This device is not currently configured for any deposition.',
+                    Duration: 5,
+                    });
+}
+xapi.event.on('UserInterface Extensions Panel Clicked', (event) => {
+    if (event.PanelId=='panel_join_meeting'){
+           alertInactive();
+    }
+});
+
+</body>
+            </Save>
+            <Activate>
+               <Name>TeamHost</Name>
+            </Activate>
+         </Macro>
+         <Runtime>
+      <Restart command='True'></Restart>
+    </Runtime>
+      </Macros>
+   </Command>

@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<Command>
+      <UserInterface>
+        <Extensions>
+          <Panel>
+
+                <Save>
+                    <PanelId>panel_call_member</PanelId>
+                    <body>&lt;Extensions&gt;
+                        &lt;Version&gt;1.5&lt;/Version&gt;
+                        &lt;Panel&gt;
+                        &lt;Type&gt;Home&lt;/Type&gt;
+                        &lt;Icon&gt;Handset&lt;/Icon&gt;
+                        &lt;Order&gt;2&lt;/Order&gt;
+                        &lt;Color&gt;#30D557&lt;/Color&gt;
+                        &lt;Name&gt;Call Member&lt;/Name&gt;
+                        &lt;Page&gt;
+                        &lt;Name&gt;Select someone to call&lt;/Name&gt;
+PANELROWSTUB
+                        &lt;/Page&gt;
+                        &lt;/Panel&gt;
+                        &lt;/Extensions&gt;</body>
+                </Save>
+
+
+                <Save>
+                    <PanelId>panel_join_meeting</PanelId>
+                    <body>&lt;Extensions&gt;
+                        &lt;Version&gt;1.5&lt;/Version&gt;
+                        &lt;Panel&gt;
+                        &lt;Type&gt;Home&lt;/Type&gt;
+                        &lt;Icon&gt;Webex&lt;/Icon&gt;
+                        &lt;Order&gt;2&lt;/Order&gt;
+                        &lt;Color&gt;#30D557&lt;/Color&gt;
+                        &lt;Name&gt;Start Meeting&lt;/Name&gt;
+                        &lt;/Panel&gt;
+                        &lt;/Extensions&gt;</body>
+                </Save>
+
+          </Panel>
+        </Extensions>
+      </UserInterface>
+
+      <Macros>
+         <Macro>
+            <Save>
+               <Name>TeamHost</Name>
+               <Overwrite>True</Overwrite>
+                  <body>
+const xapi = require('xapi');
+
+const DEST_CALL_HOST_PMR='TEAMPMRURI';
+const MEMBER_URIS=[MEMBERSURILISTSTUB]
+const DEPO_START='STARTSTUB';
+const DEPO_END='ENDSTUB';
+
+xapi.config.set('UserInterface Features Call Start','Hidden');
+xapi.config.set('UserInterface Features Call JoinWebex','Hidden');
+
+function isDepoActive() {
+           var depoStart = new Date(DEPO_START);
+           var depoEnd = new Date(DEPO_END);
+           var dateToday = new Date();
+           return (dateToday &gt;= depoStart &amp;&amp; dateToday &lt;= depoEnd);
+        }
+
+function alertInactive() {
+    xapi.Command.UserInterface.Message.Alert.Display({
+                    Title: 'Inactive Deposition',
+                    Text: 'This Deposition starts on '+DEPO_START+' and ends on '+DEPO_END,
+                    Duration: 5,
+                    });
+}
+
+xapi.event.on('UserInterface Extensions Widget Action', (event) => {
+  if (event.Type == 'clicked')
+  {
+    if (isDepoActive()) {
+        for (let i=0; i &lt; MEMBER_URIS.length ;i++) {
+            if ( event.WidgetId=="widget_call_user".concat(i.toString()) )
+            {
+                xapi.command('dial', { Number: MEMBER_URIS[i] });
+            }
+        }
+      }
+     else {
+        alertInactive();
+     }
+  }
+});
+
+xapi.event.on('UserInterface Extensions Panel Clicked', (event) => {
+    if (event.PanelId=='panel_join_meeting'){
+        if (isDepoActive()) {
+           xapi.command("dial", {Number: DEST_CALL_HOST_PMR});
+          }
+         else {
+              alertInactive();
+          }
+   }
+});
+
+</body>
+            </Save>
+            <Activate>
+               <Name>TeamHost</Name>
+            </Activate>
+         </Macro>
+         <Runtime>
+      <Restart command='True'></Restart>
+    </Runtime>
+      </Macros>
+   </Command>

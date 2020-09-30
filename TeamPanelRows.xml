@@ -1,0 +1,9 @@
+                        &lt;Row&gt;
+                        &lt;Name&gt;DISPLAYNAMESTUB&lt;/Name&gt;
+                        &lt;Widget&gt;
+                        &lt;WidgetId&gt;widget_call_userINDEXSTUB&lt;/WidgetId&gt;
+                        &lt;Name&gt;Call&lt;/Name&gt;
+                        &lt;Type&gt;Button&lt;/Type&gt;
+                        &lt;Options&gt;size=2&lt;/Options&gt;
+                        &lt;/Widget&gt;
+                        &lt;/Row&gt;
